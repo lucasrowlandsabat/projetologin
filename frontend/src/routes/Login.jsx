@@ -2,6 +2,8 @@ import { useState } from "react"
 import axios from 'axios'
 import { useNavigate } from "react-router-dom"
 
+const API_BASE = "http://localhost:5001"
+
 const Login = () => {
 
 // HOOK -useState - manipula o estado da variavel
@@ -12,21 +14,29 @@ const Login = () => {
   //HOOK - useNavigate - navega entre os componentes 
   const navigate = useNavigate();
 
-  // CRIANDO A FUNÇÃO handleLogin
-  const handleLogin =async (e)=>{
-    e.preventDefatult(); //previne que a pagina faça loading
-    try{
-      // PREPARANDO PARA A FUNÇÃO AXIOS PEGAR A URL DO SERVIDOR (API)
-      const response = await axios.post("http://localhost:5001/login",{email, senha});
-      // PEGA O USUARIO E SENHA E GUARDA NO LOCALSTORAGE
-      localStorage.setItem("token",response.data.token);
-      setMensagem("Login efetuado com sucesso");
-      setTimeout(()=>navigate("/dashboard"),1500);
-    }
-    catch(error){
-        setMensagem("Erro ao fazer o Login")
-    }
-  }
+ const handleLogin = async (e) => {
+        e.preventDefault();
+        setMensagem("");
+
+        try {
+            const response = await axios.post(`${API_BASE}/login`, { email, senha });
+            
+            const token = response.data.token;
+            
+            if (token) {
+                localStorage.setItem('token', token);
+                setMensagem('Login bem-sucedido!');
+                setTimeout(() => navigate("/dashboard"), 1000); // Redirecionamento mais rápido
+            } else {
+                setMensagem("Erro: Token de autenticação não recebido.");
+            }
+
+        } catch (error) {
+            // Captura a mensagem de erro do servidor (ex: "Usuário ou senha inválidos")
+            const errorMessage = error.response?.data?.message || 'Erro de conexão ou servidor.';
+            setMensagem(errorMessage);
+        }
+    };
 
 
   return (

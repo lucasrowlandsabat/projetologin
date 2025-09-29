@@ -16,7 +16,7 @@ const Register = () => {
       // Direciona para o login em 2 segundos
       setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
-      setMensagem("Erro ao registrar usuário");
+      setMensagem(error,"Erro ao registrar usuário");
     }
   };
 
